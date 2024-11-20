@@ -60,8 +60,8 @@ FROM ubuntu:24.04
 
 ARG DEBIAN_FRONTEND="noninteractive"
 ENV LIBGL_ALWAYS_INDIRECT=1
-ENV NVIDIA_VISIBLE_DEVICES ${NVIDIA_VISIBLE_DEVICES:-all}
-ENV NVIDIA_DRIVER_CAPABILITIES ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
+ENV NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES:-all}
+ENV NVIDIA_DRIVER_CAPABILITIES=${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
 
 # Add deadsnakes PPA for Python 3.10
 RUN apt-get update && apt-get install -y software-properties-common && \
@@ -82,23 +82,21 @@ RUN apt-get update --fix-missing && \
     libglu1-mesa-dev \
     fontconfig \
     libfreetype6-dev \
-    curl
+    curl \
+    sudo \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create and activate virtual environment
 ENV VIRTUAL_ENV=/opt/venv
 RUN python3.10 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# Install specific pip version that can handle gym 0.19.0
+# Install specific pip version
 RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10
 RUN pip install pip==23.0.1
 
 # Install OpenGL dependencies
-RUN pip install PyOpenGL \
-    PyOpenGL_accelerate
-
-# Pre-install gym 0.19.0 specifically with its dependencies
-# RUN pip install 'gym==0.19.0' 'opencv-python>=3.4' numpy
+RUN pip install PyOpenGL PyOpenGL_accelerate
 
 RUN mkdir /f1tenth_gym
 COPY . /f1tenth_gym
