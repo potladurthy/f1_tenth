@@ -17,5 +17,6 @@ setup(name='f110_gym',
                         'pyglet<=1.5',
                         'matplotlib==3.5.0',
                         'pandas==1.3.5',
+                        'scikit-learn==1.5.2',
                         'pyopengl']
       )
